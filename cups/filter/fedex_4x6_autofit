@@ -35,7 +35,7 @@ X=50
 Y=40
 
 convert "$PNG_PAGE" -crop ${CROP_W}x${CROP_H}+${X}+${Y} +repage \
-  -resize ${OUT_W}x${OUT_H}! \
+  -resize ${OUT_H}x${OUT_W}! \
   "$PNG_CROP"
 
 # Wrap cropped image into a 4x6 PDF
