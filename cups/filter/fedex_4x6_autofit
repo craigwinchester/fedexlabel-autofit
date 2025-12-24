@@ -41,6 +41,13 @@ convert "$PNG_PAGE" -crop ${CROP_W}x${CROP_H}+${X}+${Y} +repage \
 identify -format "CROP px: %wx%h  density: %x x %y\n" "$PNG_CROP" >&2
 
 # Wrap cropped image into a 4x6 PDF
-convert -density ${DPI} "$PNG_CROP" -units PixelsPerInch "$PDF_OUT"
+# OLD -->convert -density ${DPI} "$PNG_CROP" -units PixelsPerInch "$PDF_OUT"
+gs -q -dNOPAUSE -dBATCH \
+  -sDEVICE=pdfwrite \
+  -o "$PDF_OUT" \
+  -g${OUT_W}x${OUT_H} \
+  -r${DPI} \
+  "$PNG_CROP"
+
 
 cat "$PDF_OUT"
