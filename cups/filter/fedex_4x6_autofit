@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+INPUT="${6:-/dev/stdin}"
+
+# Printer DPI
+DPI=203
+
+# 4x6 inches in pixels at 203 dpi
+OUT_W=$((4 * DPI))   # 812
+OUT_H=$((6 * DPI))   # 1218
+
+# FEDEX label is typically in top-left of letter.
+
+TMPDIR="$(mktemp -d /tmp/fedexlabel.XXXXXX)"
+trap 'rm -rf "$TMPDIR"' EXIT
+
+PNG_PAGE="$TMPDIR/page.png"
+PNG_CROP="$TMPDIR/crop.png"
+PDF_OUT="$TMPDIR/out.pdf"
+
+# Render first page at DPI to PNG (no transparency issues)
+# Use -dFirstPage/-dLastPage to keep it fast
+/usr/bin/gs -q -dNOPAUSE -dBATCH \
+  -sDEVICE=pnggray \
+  -r${DPI} \
+  -dFirstPage=1 -dLastPage=1 \
+  -sOutputFile="$PNG_PAGE" \
+  "$INPUT"
+
+# Crop
+CROP_W=$OUT_W   
+CROP_H=$OUT_H   
+X=75
+Y=75
+
+convert "$PNG_PAGE" -crop ${CROP_W}x${CROP_H}+${X}+${Y} +repage \
+  -resize ${OUT_W}x${OUT_H}! \
+  "$PNG_CROP"
+
+# Wrap cropped image into a 4x6 PDF
+convert "$PNG_CROP" -units PixelsPerInch -density ${DPI} "$PDF_OUT"
+
+cat "$PDF_OUT"
