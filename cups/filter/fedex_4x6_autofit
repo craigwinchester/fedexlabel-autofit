@@ -29,25 +29,24 @@ PDF_OUT="$TMPDIR/out.pdf"
   "$INPUT"
 
 # Crop
-CROP_W=$OUT_W   
-CROP_H=$OUT_H   
-X=50
-Y=40
+# Optional nudges (pixels)
+X=0
+Y=0
 
-convert "$PNG_PAGE" -crop ${CROP_W}x${CROP_H}+${X}+${Y} +repage \
-  -resize ${OUT_W}x${OUT_H}! \
+# SCALE-TO-FILL + hard extent to 4x6
+convert "$PNG_PAGE" \
+  -repage +${X}+${Y} \
+  -resize ${OUT_W}x${OUT_H}^ \
+  -gravity northwest \
+  -extent ${OUT_W}x${OUT_H} \
   "$PNG_CROP"
 
-# Force correct DPI metadata (PPI) onto the PNG before PDF embedding
+# Force correct DPI metadata
 mogrify -units PixelsPerInch -density ${DPI} "$PNG_CROP"
 
-identify -format "CROP px: %wx%h  density: %x x %y\n" "$PNG_CROP" >&2
+identify -format "FINAL px: %wx%h  density: %x x %y\n" "$PNG_CROP" >&2
 
-# Wrap cropped image into a 4x6 PDF (force page size + full-bleed placement)
-convert -units PixelsPerInch -density ${DPI} \
-  "$PNG_CROP" \
-  -page ${OUT_W}x${OUT_H} \
-  -compress Zip \
-  "$PDF_OUT"
+# Write final PDF (no scaling ambiguity left)
+convert -units PixelsPerInch -density ${DPI} "$PNG_CROP" "$PDF_OUT"
 
 cat "$PDF_OUT"
