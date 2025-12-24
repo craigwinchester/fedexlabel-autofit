@@ -33,6 +33,8 @@ PDF_OUT="$TMPDIR/out.pdf"
 X=0
 Y=0
 
+ZOOM="${ZOOM:-120}" 
+
 # SCALE-TO-FILL + hard extent to 4x6
 convert "$PNG_PAGE" \
   -repage +${X}+${Y} \
