@@ -31,8 +31,8 @@ PDF_OUT="$TMPDIR/out.pdf"
 # Crop
 CROP_W=$OUT_W   
 CROP_H=$OUT_H   
-X=75
-Y=75
+X=50
+Y=40
 
 convert "$PNG_PAGE" -crop ${CROP_W}x${CROP_H}+${X}+${Y} +repage \
   -resize ${OUT_W}x${OUT_H}! \
