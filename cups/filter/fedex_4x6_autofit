@@ -41,9 +41,7 @@ convert "$PNG_PAGE" -crop ${CROP_W}x${CROP_H}+${X}+${Y} +repage \
 identify -format "CROP px: %wx%h  density: %x x %y\n" "$PNG_CROP" >&2
 pdfinfo "$PDF_OUT" | egrep -i "Page size|Pages" >&2
 
-
 # Wrap cropped image into a 4x6 PDF
-convert "$PNG_CROP" -units PixelsPerInch -density ${DPI} "$PDF_OUT"
-
+convert -density ${DPI} "$PNG_CROP" -units PixelsPerInch "$PDF_OUT"
 
 cat "$PDF_OUT"
