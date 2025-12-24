@@ -38,16 +38,12 @@ convert "$PNG_PAGE" -crop ${CROP_W}x${CROP_H}+${X}+${Y} +repage \
   -resize ${OUT_W}x${OUT_H}! \
   "$PNG_CROP"
 
+# Force correct DPI metadata (PPI) onto the PNG before PDF embedding
+mogrify -units PixelsPerInch -density ${DPI} "$PNG_CROP"
+
 identify -format "CROP px: %wx%h  density: %x x %y\n" "$PNG_CROP" >&2
 
 # Wrap cropped image into a 4x6 PDF
-# OLD -->convert -density ${DPI} "$PNG_CROP" -units PixelsPerInch "$PDF_OUT"
-gs -q -dNOPAUSE -dBATCH \
-  -sDEVICE=pdfwrite \
-  -o "$PDF_OUT" \
-  -g${OUT_W}x${OUT_H} \
-  -r${DPI} \
-  "$PNG_CROP"
-
+convert -density ${DPI} "$PNG_CROP" -units PixelsPerInch "$PDF_OUT"
 
 cat "$PDF_OUT"
