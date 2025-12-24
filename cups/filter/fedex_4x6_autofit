@@ -46,7 +46,7 @@ convert "$PNG_PAGE" \
 # Force correct DPI metadata
 mogrify -units PixelsPerInch -density ${DPI} "$PNG_CROP"
 
-identify -format "FINAL px: %wx%h  density: %x x %y\n" "$PNG_CROP" >&2
+#identify -format "FINAL px: %wx%h  density: %x x %y\n" "$PNG_CROP" >&2
 
 # Write final PDF (no scaling ambiguity left)
 convert -units PixelsPerInch -density ${DPI} "$PNG_CROP" "$PDF_OUT"
